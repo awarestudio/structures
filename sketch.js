@@ -4,6 +4,17 @@ function setup() {
 	rectanglesLayer.angleMode(DEGREES)
 	rectanglesLayer.noFill()
 
+	COLORS = [
+		color(34, 116, 165),
+		color(221, 133, 44),
+		"black"
+	]
+	COLORS_W = [
+		33,
+		33,
+		33
+	]
+
 	noLoop()
 }
 
@@ -23,12 +34,13 @@ function draw() {
 			span = map(hIndex, 0, hpoints.length, 0, PI)
 			// s = -5*sin(span+sin(span-PI)-PI)
 			s = 5*sin(span)+1
+			// s = 1
 
 			// -sin(x+sin(x-pi)-pi)
-
-			print(s)
 			
 			for (let index = 0; index < s; index++) {
+				color = randomWeighted(COLORS, COLORS_W)
+				rectanglesLayer.stroke(color)
 				drawNoisyQuad(rectanglesLayer, position, SQUARE_SIZE, 0.5)
 			}
 		}
