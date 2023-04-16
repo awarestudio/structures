@@ -58,11 +58,28 @@ function drawNoisyQuad(layer, center, size, damping=1) {
 		translationMagnitude = random(MAX_TRANSLATION) * damping
 		noiseArray.push(p5.Vector.random2D().mult(translationMagnitude))
 	}
-	layer.quad(
+	q = new QuadStructure(
 		center.x-halfSize+noiseArray[0].x, center.y-halfSize+noiseArray[0].y,
 		center.x+halfSize+noiseArray[1].x, center.y-halfSize+noiseArray[1].y,
 		center.x+halfSize+noiseArray[2].x, center.y+halfSize+noiseArray[2].y,
-		center.x-halfSize+noiseArray[3].x, center.y+halfSize+noiseArray[3].y
-	)
+		center.x-halfSize+noiseArray[3].x, center.y+halfSize+noiseArray[3].y)
+	q.render(layer)
 }
 
+class QuadStructure{
+	constructor(topLeftX, topLeftY, topRightX, topRightY, bottomRightX, bottomRightY, bottomLeftX, bottomLeftY) {
+		this.topLeftX = topLeftX
+		this.topLeftY = topLeftY
+		this.topRightX = topRightX
+		this.topRightY = topRightY
+		this.bottomRightX = bottomRightX
+		this.bottomRightY = bottomRightY
+		this.bottomLeftX = bottomLeftX
+		this.bottomLeftY = bottomLeftY
+	}
+
+	render(layer) {
+		layer.quad(this.topLeftX, this.topLeftY, this.topRightX, this.topRightY,
+			this.bottomRightX, this.bottomRightY, this.bottomLeftX, this.bottomLeftY)
+	}
+}
