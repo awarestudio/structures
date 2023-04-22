@@ -52,51 +52,43 @@ function draw() {
 }
 
 function drawNoisyQuad(layer, center, size, damping=1) {
-	halfSize = size/2
-	noiseArray = []
-	for (let index = 0; index < 4; index++) {
-		translationMagnitude = random(MAX_TRANSLATION) * damping
-		noiseArray.push(p5.Vector.random2D().mult(translationMagnitude))
-	}
-	q = QuadStructure.regular(center, size)
-	// 	center.x-halfSize+noiseArray[0].x, center.y-halfSize+noiseArray[0].y,
-	// 	center.x+halfSize+noiseArray[1].x, center.y-halfSize+noiseArray[1].y,
-	// 	center.x+halfSize+noiseArray[2].x, center.y+halfSize+noiseArray[2].y,
-	// 	center.x-halfSize+noiseArray[3].x, center.y+halfSize+noiseArray[3].y)
+	q = QuadStructure.noisy(center, size, 0.1, 0.1)
 	q.render(layer)
 }
 
 class QuadStructure{
-	constructor(topLeft, topRight, bottomRight, bottomLeft) {
-		this.topLeft = topLeft
-		this.topRight = topRight
-		this.bottomRight = bottomRight
-		this.bottomLeft = bottomLeft
+	constructor(points) {
+		this.points = points // [topLeft, topRight, bottomRight, bottomLeft]
 	}
 
 	static regular(center, size) {
-		let topLeft = p5.Vector.add(
-			center,
-			createVector(-size/2, -size/2)
-		)
-		let topRight = p5.Vector.add(
-			center,
-			createVector(size/2, -size/2)
-		)
-		let bottomRight = p5.Vector.add(
-			center,
-			createVector(size/2, size/2)
-		)
-		let bottomLeft = p5.Vector.add(
-			center,
-			createVector(-size/2, size/2)
-		)
+		let relativePostions = [createVector(-size/2, -size/2), createVector(size/2, -size/2), createVector(size/2, size/2), createVector(-size/2, size/2)]
+		let points = []
+
+		for (let index = 0; index < relativePostions.length; index++) {
+			const point = p5.Vector.add(center, relativePostions[index])
+			points.push(point)
+		}
 		
-		return new QuadStructure(topLeft, topRight, bottomRight, bottomLeft)
+		return new QuadStructure(points)
+	}
+
+	static noisy(center, size, vertexNoiseRatio=0.5, translationNoiseRatio=1) {
+		let translationMagnitude = random(translationNoiseRatio) * size
+		let translatedCenter = center.add(p5.Vector.random2D().mult(translationMagnitude))
+
+		quad = QuadStructure.regular(translatedCenter, size)
+
+		for (let index = 0; index < 4; index++) {
+			let noiseMagnitude = random(vertexNoiseRatio) * size
+			quad.points[index].add(p5.Vector.random2D().mult(noiseMagnitude))
+		}
+
+		return quad
 	}
 
 	render(layer) {
-		layer.quad(this.topLeft.x, this.topLeft.y, this.topRight.x, this.topRight.y,
-			this.bottomRight.x, this.bottomRight.y, this.bottomLeft.x, this.bottomLeft.y)
+		layer.quad(this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y,
+			this.points[2].x, this.points[2].y, this.points[3].x, this.points[3].y)
 	}
 }
