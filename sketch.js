@@ -58,28 +58,45 @@ function drawNoisyQuad(layer, center, size, damping=1) {
 		translationMagnitude = random(MAX_TRANSLATION) * damping
 		noiseArray.push(p5.Vector.random2D().mult(translationMagnitude))
 	}
-	q = new QuadStructure(
-		center.x-halfSize+noiseArray[0].x, center.y-halfSize+noiseArray[0].y,
-		center.x+halfSize+noiseArray[1].x, center.y-halfSize+noiseArray[1].y,
-		center.x+halfSize+noiseArray[2].x, center.y+halfSize+noiseArray[2].y,
-		center.x-halfSize+noiseArray[3].x, center.y+halfSize+noiseArray[3].y)
+	q = QuadStructure.regular(center, size)
+	// 	center.x-halfSize+noiseArray[0].x, center.y-halfSize+noiseArray[0].y,
+	// 	center.x+halfSize+noiseArray[1].x, center.y-halfSize+noiseArray[1].y,
+	// 	center.x+halfSize+noiseArray[2].x, center.y+halfSize+noiseArray[2].y,
+	// 	center.x-halfSize+noiseArray[3].x, center.y+halfSize+noiseArray[3].y)
 	q.render(layer)
 }
 
 class QuadStructure{
-	constructor(topLeftX, topLeftY, topRightX, topRightY, bottomRightX, bottomRightY, bottomLeftX, bottomLeftY) {
-		this.topLeftX = topLeftX
-		this.topLeftY = topLeftY
-		this.topRightX = topRightX
-		this.topRightY = topRightY
-		this.bottomRightX = bottomRightX
-		this.bottomRightY = bottomRightY
-		this.bottomLeftX = bottomLeftX
-		this.bottomLeftY = bottomLeftY
+	constructor(topLeft, topRight, bottomRight, bottomLeft) {
+		this.topLeft = topLeft
+		this.topRight = topRight
+		this.bottomRight = bottomRight
+		this.bottomLeft = bottomLeft
+	}
+
+	static regular(center, size) {
+		let topLeft = p5.Vector.add(
+			center,
+			createVector(-size/2, -size/2)
+		)
+		let topRight = p5.Vector.add(
+			center,
+			createVector(size/2, -size/2)
+		)
+		let bottomRight = p5.Vector.add(
+			center,
+			createVector(size/2, size/2)
+		)
+		let bottomLeft = p5.Vector.add(
+			center,
+			createVector(-size/2, size/2)
+		)
+		
+		return new QuadStructure(topLeft, topRight, bottomRight, bottomLeft)
 	}
 
 	render(layer) {
-		layer.quad(this.topLeftX, this.topLeftY, this.topRightX, this.topRightY,
-			this.bottomRightX, this.bottomRightY, this.bottomLeftX, this.bottomLeftY)
+		layer.quad(this.topLeft.x, this.topLeft.y, this.topRight.x, this.topRight.y,
+			this.bottomRight.x, this.bottomRight.y, this.bottomLeft.x, this.bottomLeft.y)
 	}
 }
